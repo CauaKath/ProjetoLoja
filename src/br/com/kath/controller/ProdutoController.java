@@ -84,6 +84,18 @@ public class ProdutoController {
 			products.set(productId, produto);
 			
 			break;
+		
+		case 2:
+			System.out.print("Informe o novo preço do produto: ");
+			produto.setProductPrice(input.nextDouble());
+			
+			produto.setProductName(products.get(productId).getProductName());
+			produto.setProductQuantity(products.get(productId).getProductQuantity());
+			produto.setStorageBalance(products.get(productId).getProductPrice() * products.get(productId).getProductQuantity());
+			
+			products.set(productId, produto);
+			
+			break;
 		}
 
 		return produto;
