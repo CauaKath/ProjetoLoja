@@ -47,6 +47,7 @@ public class ProdutoController {
 	
 	public void storageList(List<ProdutoModel> products) {
 		System.out.println("\n---- PRODUTOS CADASTRADOS ----\n");
+		System.out.printf("| %10s | %8s | %4s | %9s | \n", "Produto", "Preço", "Quantidade", "R$ Total");
 		for (ProdutoModel produtoModel : products) {
 			System.out.println(produtoModel);
 		}
