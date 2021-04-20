@@ -12,7 +12,7 @@ public class ProdutoController {
 	public ProdutoController() {
 		input = new Scanner(System.in);
 	}
-	
+
 	public int option() {
 		System.out.print("> ");
 		return input.nextInt();
@@ -44,25 +44,62 @@ public class ProdutoController {
 
 		return produtoModel;
 	}
-	
-	public void storageList(List<ProdutoModel> products) {
+
+	public List<ProdutoModel> storageList(List<ProdutoModel> products) {
 		System.out.println("\n---- PRODUTOS CADASTRADOS ----\n");
-		System.out.printf("| %10s | %8s | %4s | %9s | \n", "Produto", "Preço", "Quantidade", "R$ Total");
-		for (ProdutoModel produtoModel : products) {
-			System.out.println(produtoModel);
-		}
+		System.out.printf("| %10s | %8s | %4s | %9s | \n", "Produto", "Preço", "Qntd", "R$ Total");
+
+		products.forEach(produto -> {
+			System.out.printf("| %10s | %8s | %4s | %9s | \n", produto.getProductName(), produto.getProductPrice(),
+					produto.getProductQuantity(), produto.getStorageBalance());
+		});
+
+		return products;
 	}
-	
+
+	public ProdutoModel editProduct(List<ProdutoModel> products) {
+		var produto = new ProdutoModel();
+		int productId, fieldIndex;
+
+		System.out.println("\n---- EDITAR DADOS DE PRODUTO ----\n");
+		System.out.print("Informe o Id do produto: ");
+		productId = input.nextInt();
+
+		System.out.print("---- CAMPOS ----" + 
+				"\n1) Nome do produto" + 
+				"\n2) Preço do produto" + 
+				"\n3) Quantidade do produto" + 
+				"\nInforme o campo que deseja editar: ");
+		fieldIndex = input.nextInt();
+		
+		switch (fieldIndex) {
+		case 1:
+			System.out.print("Informe o novo nome do produto: ");
+			produto.setProductName(input.next());
+			
+			produto.setProductPrice(products.get(productId).getProductPrice());
+			produto.setProductQuantity(products.get(productId).getProductQuantity());
+			produto.setStorageBalance(products.get(productId).getProductPrice() * products.get(productId).getProductQuantity());
+			
+			products.set(productId, produto);
+			
+			break;
+		}
+
+		return produto;
+	}
+
 	public ProdutoModel removeProduct(List<ProdutoModel> products) {
 		System.out.println("\n---- REMOVER ITENS ----\n");
 		System.out.print("Produto: ");
 		String produtoRemovido = input.next();
-		
-		for (int i = 0; i < products.size(); i ++) {
+
+		for (int i = 0; i < products.size(); i++) {
 			if (products.get(i).getProductName().equals(produtoRemovido)) {
 				return products.get(i);
 			}
 		}
+
 		return null;
 	}
 

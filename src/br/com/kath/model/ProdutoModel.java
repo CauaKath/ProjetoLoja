@@ -46,13 +46,5 @@ public class ProdutoModel {
 	public void setProductQuantity(int productQuantity) {
 		this.productQuantity = productQuantity;
 	}
-
-	@Override
-	public String toString() {
-		return "ProductName: " + productName + 
-				"\nProductPrice: R$" + productPrice + 
-				"\nProductQuantity: " + productQuantity + 
-				"\nStorageBalance: R$" + storageBalance;
-	}
 	
 }

@@ -31,6 +31,10 @@ public class ProgramaPrincipal {
 				produtoController.storageList(products);
 				break;
 			
+			case 3:
+				produtoController.editProduct(products);
+				break;
+				
 			case 4:
 				products.remove(produtoController.removeProduct(products));
 				break;
