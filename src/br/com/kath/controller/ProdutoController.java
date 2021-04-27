@@ -30,41 +30,58 @@ public class ProdutoController {
 	}
 
 	public ProdutoModel registerProduct() {
-		var produtoModel = new ProdutoModel();
+		var productModel = new ProdutoModel();
 
 		System.out.println("\n---- CADASTRAR ITENS ----\n");
 		System.out.print("Produto: ");
 		input.nextLine();
-		produtoModel.setProductName(input.nextLine());
+		productModel.setProductName(input.nextLine());
 		System.out.print("Preço: R$");
-		produtoModel.setProductPrice(input.nextDouble());
+		productModel.setProductPrice(input.nextDouble());
 		System.out.print("Quantidade: ");
-		produtoModel.setProductQuantity(input.nextInt());
-		produtoModel.setStorageBalance(produtoModel.getProductQuantity() * produtoModel.getProductPrice());
+		productModel.setProductQuantity(input.nextInt());
+		productModel.setStorageBalance(productModel.getProductQuantity() * productModel.getProductPrice());
 
-		return produtoModel;
+		return productModel;
 	}
 
 	public List<ProdutoModel> storageList(List<ProdutoModel> products) {
 		System.out.println("\n---- PRODUTOS CADASTRADOS ----\n");
-		System.out.printf("| %10s | %8s | %4s | %9s | \n", "Produto", "Preço", "Qntd", "R$ Total");
-
-		products.forEach(produto -> {
-			System.out.printf("| %10s | %8s | %4s | %9s | \n", produto.getProductName(), produto.getProductPrice(),
-					produto.getProductQuantity(), produto.getStorageBalance());
-		});
+		System.out.printf("| %2s | %10s | %8s | %4s | %9s | \n", "ID", "Produto", "Preço", "Qntd", "R$ Total");
+		
+		for (int i = 0; i < products.size(); i ++) {
+			System.out.printf("| %2s | %10s | %8s | %4s | %9s | \n",
+					i + 1,
+					products.get(i).getProductName(),
+					products.get(i).getProductPrice(),
+					products.get(i).getProductQuantity(),
+					products.get(i).getStorageBalance()
+			);
+		}
 
 		return products;
 	}
 
 	public ProdutoModel editProduct(List<ProdutoModel> products) {
-		var produto = new ProdutoModel();
+		var product = new ProdutoModel();
 		int productId, fieldIndex;
-
+		
+		if (products.size() <= 0) {
+			System.out.println("Não existem produtos cadastrados");
+			return null;
+		}
+		
+		this.storageList(products);
+			
 		System.out.println("\n---- EDITAR DADOS DE PRODUTO ----\n");
 		System.out.print("Informe o Id do produto: ");
-		productId = input.nextInt();
+		productId = input.nextInt() - 1;
 
+		if (productId > products.size()) {
+			System.out.println("Esse produto não existe!");
+			return null;
+		}
+		
 		System.out.print("---- CAMPOS ----" + 
 				"\n1) Nome do produto" + 
 				"\n2) Preço do produto" + 
@@ -75,44 +92,61 @@ public class ProdutoController {
 		switch (fieldIndex) {
 		case 1:
 			System.out.print("Informe o novo nome do produto: ");
-			produto.setProductName(input.next());
+			product.setProductName(input.next());
 			
-			produto.setProductPrice(products.get(productId).getProductPrice());
-			produto.setProductQuantity(products.get(productId).getProductQuantity());
-			produto.setStorageBalance(products.get(productId).getProductPrice() * products.get(productId).getProductQuantity());
+			product.setProductPrice(products.get(productId).getProductPrice());
+			product.setProductQuantity(products.get(productId).getProductQuantity());
+			product.setStorageBalance(products.get(productId).getStorageBalance());
 			
-			products.set(productId, produto);
+			products.set(productId, product);
 			
 			break;
 		
 		case 2:
 			System.out.print("Informe o novo preço do produto: ");
-			produto.setProductPrice(input.nextDouble());
+			product.setProductPrice(input.nextDouble());
 			
-			produto.setProductName(products.get(productId).getProductName());
-			produto.setProductQuantity(products.get(productId).getProductQuantity());
-			produto.setStorageBalance(products.get(productId).getProductPrice() * products.get(productId).getProductQuantity());
+			product.setProductName(products.get(productId).getProductName());
+			product.setProductQuantity(products.get(productId).getProductQuantity());
+			product.setStorageBalance(product.getProductPrice() * products.get(productId).getProductQuantity());
 			
-			products.set(productId, produto);
+			products.set(productId, product);
+			
+			break;
+		
+		case 3:
+			System.out.print("Informe a nova quantidade do produto: ");
+			product.setProductQuantity(input.nextInt());
+			
+			product.setProductName(products.get(productId).getProductName());
+			product.setProductPrice(products.get(productId).getProductPrice());
+			product.setStorageBalance(product.getProductQuantity() * products.get(productId).getProductPrice());
+			
+			products.set(productId, product);
 			
 			break;
 		}
 
-		return produto;
+		return product;
 	}
 
-	public ProdutoModel removeProduct(List<ProdutoModel> products) {
-		System.out.println("\n---- REMOVER ITENS ----\n");
-		System.out.print("Produto: ");
-		String produtoRemovido = input.next();
-
-		for (int i = 0; i < products.size(); i++) {
-			if (products.get(i).getProductName().equals(produtoRemovido)) {
-				return products.get(i);
-			}
+	public void removeProduct(List<ProdutoModel> products) {
+		
+		if (products.size() <= 0) {
+			System.out.println("Não existem produtos para serem removidos!");
+			return;
+		}
+		
+		System.out.println("\n---- REMOVER PRODUTO ----\n");
+		System.out.print("Informe o ID do produto: ");
+		int productId = input.nextInt();
+		
+		if (productId > products.size()) {
+			System.out.println("Esse produto não existe!");
+			return;
 		}
 
-		return null;
+		products.remove(productId - 1);
 	}
 
 }
