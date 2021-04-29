@@ -67,18 +67,18 @@ public class ProdutoController {
 		int productId, fieldIndex;
 		
 		if (products.size() <= 0) {
-			System.out.println("Não existem produtos cadastrados");
+			System.out.println("\nNão existem produtos cadastrados");
 			return null;
 		}
 		
 		this.storageList(products);
 			
 		System.out.println("\n---- EDITAR DADOS DE PRODUTO ----\n");
-		System.out.print("Informe o Id do produto: ");
+		System.out.print("\nInforme o Id do produto: ");
 		productId = input.nextInt() - 1;
 
 		if (productId > products.size()) {
-			System.out.println("Esse produto não existe!");
+			System.out.println("\nEsse produto não existe!");
 			return null;
 		}
 		
@@ -91,7 +91,7 @@ public class ProdutoController {
 		
 		switch (fieldIndex) {
 		case 1:
-			System.out.print("Informe o novo nome do produto: ");
+			System.out.print("\nInforme o novo nome do produto: ");
 			product.setProductName(input.next());
 			
 			product.setProductPrice(products.get(productId).getProductPrice());
@@ -103,7 +103,7 @@ public class ProdutoController {
 			break;
 		
 		case 2:
-			System.out.print("Informe o novo preço do produto: ");
+			System.out.print("\nInforme o novo preço do produto: ");
 			product.setProductPrice(input.nextDouble());
 			
 			product.setProductName(products.get(productId).getProductName());
@@ -115,7 +115,7 @@ public class ProdutoController {
 			break;
 		
 		case 3:
-			System.out.print("Informe a nova quantidade do produto: ");
+			System.out.print("\nInforme a nova quantidade do produto: ");
 			product.setProductQuantity(input.nextInt());
 			
 			product.setProductName(products.get(productId).getProductName());
@@ -133,7 +133,7 @@ public class ProdutoController {
 	public void removeProduct(List<ProdutoModel> products) {
 		
 		if (products.size() <= 0) {
-			System.out.println("Não existem produtos para serem removidos!");
+			System.out.println("\nNão existem produtos para serem removidos!");
 			return;
 		}
 		
@@ -142,7 +142,7 @@ public class ProdutoController {
 		int productId = input.nextInt();
 		
 		if (productId > products.size()) {
-			System.out.println("Esse produto não existe!");
+			System.out.println("\nEsse produto não existe!");
 			return;
 		}
 

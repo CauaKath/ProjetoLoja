@@ -51,8 +51,20 @@ public class ProgramaPrincipal {
 					car.add(carController.addProductInCar(products));
 					break;
 				
+				case 2:
+					carController.editQntdInCar(car, products);
+					break;
+				
+				case 3:
+					carController.removeProductOutCar(car);
+					break;
+				
 				case 4:
 					carController.carProductsList(car);
+					break;
+				
+				case 5:
+					carController.finalizePurchase(products);
 					break;
 				}
 				break;
