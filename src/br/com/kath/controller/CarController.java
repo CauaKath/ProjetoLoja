@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import br.com.kath.model.CarModel;
+import br.com.kath.model.PersonModel;
 import br.com.kath.model.ProdutoModel;
 
 public class CarController {
@@ -26,6 +27,7 @@ public class CarController {
 		System.out.println("3) Remover produto");
 		System.out.println("4) Listar produtos no carrinho");
 		System.out.println("5) Finalizar compra");
+		System.out.println("6) Voltar");
 		System.out.println("--------------------");
 	}
 	
@@ -59,20 +61,21 @@ public class CarController {
 		
 		product.setProductName(products.get(productId - 1).getProductName());
 		product.setProductPrice(products.get(productId - 1).getProductPrice());
+		product.setStorageBalance(product.getProductPrice() * product.getProductQuantity());
 		
 		return product;
 	}
 	
-	public void editQntdInCar(List<ProdutoModel> carProducts, List<ProdutoModel> products) {
+	public void editQntdInCar(PersonModel person, List<ProdutoModel> products) {
 		int productQntd, productId;
 		String productName;
 		
-		this.carProductsList(carProducts);
+		this.carProductsList(person);
 		
 		System.out.print("\nInforme o nome do produto que deseja alterar a quantidade: ");
 		productName = input.next();
 		
-		productId = this.nameValidate(carProducts, productName);
+		productId = this.nameValidate(person.getCar().getCarProducts(), productName);
 		
 		if (productId == -1) {
 			System.out.println("\nProduto não existe no carrinho!");
@@ -87,7 +90,9 @@ public class CarController {
 			return;
 		}
 		
-		carProducts.get(productId).setProductQuantity(carProducts.get(productId).getProductQuantity() + productQntd);
+		person.getCar().getCarProducts().get(productId).setProductQuantity(person.getCar().getCarProducts().get(productId).getProductQuantity() + productQntd);
+		person.getCar().getCarProducts().get(productId).setStorageBalance(person.getCar().getCarProducts().get(productId).getProductQuantity() *
+				person.getCar().getCarProducts().get(productId).getProductPrice());
 		
 		products.get(productId).setProductQuantity(products.get(productId).getProductQuantity() - productQntd);
 		products.get(productId).setStorageBalance(products.get(productId).getProductQuantity() * products.get(productId).getProductPrice());
@@ -95,57 +100,66 @@ public class CarController {
 		return;
 	}
 	
-	public void removeProductOutCar(List<ProdutoModel> carProducts) {
+	public void removeProductOutCar(PersonModel person) {
 		int productId;
 		String productName;
 		
-		this.carProductsList(carProducts);
+		this.carProductsList(person);
 		
 		System.out.print("\nInforme o nome do produto que deseja remover do carrinho: ");
 		productName = input.next();
 		
-		productId = this.nameValidate(carProducts, productName);
+		productId = this.nameValidate(person.getCar().getCarProducts(), productName);
 		
 		if (productId == -1) {
 			System.out.println("\nProduto não existe no carrinho!");
 			return;
 		}
 		
-		carProducts.remove(productId);
+		person.getCar().getCarProducts().remove(productId);
 		
 		return;
 	}
 	
-	public void carProductsList(List<ProdutoModel> carProducts) {
+	public void carProductsList(PersonModel person) {
 		System.out.println("\n---- PRODUTOS NO CARRINHO ----\n");
 		System.out.printf("| %10s | %8s | %4s | \n", "Produto", "Preço", "Qntd");
 		
-		for (int i = 0; i < carProducts.size(); i ++) {
+		for (int i = 0; i < person.getCar().getCarProducts().size(); i ++) {
 			System.out.printf("| %10s | %8s | %4s | \n",
-					carProducts.get(i).getProductName(),
-					carProducts.get(i).getProductPrice(),
-					carProducts.get(i).getProductQuantity()
+					person.getCar().getCarProducts().get(i).getProductName(),
+					person.getCar().getCarProducts().get(i).getProductPrice(),
+					person.getCar().getCarProducts().get(i).getProductQuantity()
 			);
 		}
 	}
 	
-	public void finalizePurchase(List<ProdutoModel> carProducts) {
-		var carModel = this.calculateTotal(carProducts);
+	public void finalizePurchase(PersonModel person) {
+		var carModel = this.calculateTotal(person.getCar().getCarProducts());
 		
-		if (carProducts.size() == 0) {
+		if (person.getCar().getCarProducts().size() == 0) {
 			System.out.println("\nNão há nada em seu carrinho!");
 			return;
 		}
 		
-		System.out.println("\nCalculando total...");
-		try { Thread.sleep(1000); } catch ( InterruptedException ex ) {}
-		System.out.println("\nTotal no carrinho: " + carModel.getTotal());
-		System.out.println("\nRecebendo pagamento...");
-		try { Thread.sleep(1000); } catch ( InterruptedException ex ) {}
-		System.out.println("\nCompra finalizada, volte sempre!");
+		System.out.println("--------------------------------------------------");
+		System.out.println("Comprador: " + person.getNome());
+		System.out.println("--------------------------------------------------");
+		System.out.printf("%-10s     %-4s     %-10s     %-10s \n", "Produto", "Qtd", "V Unit", "V Total");
+		System.out.println("--------------------------------------------------");
+		for (int i = 0; i < person.getCar().getCarProducts().size(); i++) {
+			System.out.printf("%-10s     %-4s     %-10s     %-10s \n",
+					person.getCar().getCarProducts().get(i).getProductName(),
+					person.getCar().getCarProducts().get(i).getProductQuantity(),
+					"R$  " + person.getCar().getCarProducts().get(i).getProductPrice(),
+					"R$  " + person.getCar().getCarProducts().get(i).getStorageBalance());
+		}
+		System.out.println("--------------------------------------------------");
+		System.out.println("                        Total:         R$  " + carModel.getTotal());
+		System.out.println("--------------------------------------------------");
 		
-		for (int i = 0; i < carProducts.size(); i ++) {
-			carProducts.remove(i);
+		for (int i = 0; i < person.getCar().getCarProducts().size(); i ++) {
+			person.getCar().getCarProducts().remove(i);
 		}
 	}
 	

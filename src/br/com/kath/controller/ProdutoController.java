@@ -24,8 +24,7 @@ public class ProdutoController {
 		System.out.println("2) Listar estoque");
 		System.out.println("3) Editar item");
 		System.out.println("4) Remover item");
-		System.out.println("5) Realizar venda");
-		System.out.println("9) Sair do sistema");
+		System.out.println("5) Voltar");
 		System.out.println("--------------------");
 	}
 

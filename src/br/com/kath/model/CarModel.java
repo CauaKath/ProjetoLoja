@@ -7,7 +7,17 @@ public class CarModel {
 
 	// Atributte's
 	private double total;
+	private String model;
 	private List<ProdutoModel> carProducts = new ArrayList<ProdutoModel>();
+	
+	// Constructor's
+	public CarModel() {
+		this.total = 0;
+	}
+	
+	public CarModel(String model) {
+		this.model = model;
+	}
 	
 	// Getter's and Setter's
 	public double getTotal() {
@@ -22,8 +32,13 @@ public class CarModel {
 	public void setCarProducts(List<ProdutoModel> carProducts) {
 		this.carProducts = carProducts;
 	}
-	
-	public CarModel() {
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
 	}
 	
 }
