@@ -1,26 +1,44 @@
 package br.com.kath.controller.product;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
-import br.com.kath.model.ProdutoModel;
+import br.com.dao.DataBaseConnection;
 
 public class StorageList {
-
-	public List<ProdutoModel> storageList(List<ProdutoModel> products) {
-		System.out.println("\n---- PRODUTOS CADASTRADOS ----\n");
-		System.out.printf("| %2s | %10s | %8s | %4s | %9s | \n", "ID", "Produto", "Preço", "Qntd", "R$ Total");
+	
+	private Connection connection;
+	
+	public StorageList() {
+		connection = DataBaseConnection.getInstance().getConnection();
+	}
+	
+	public ResultSet listData() {
+		PreparedStatement preparedStatement;
 		
-		for (int i = 0; i < products.size(); i ++) {
-			System.out.printf("| %2s | %10s | %8s | %4s | %9s | \n",
-					i + 1,
-					products.get(i).getProductName(),
-					products.get(i).getProductPrice(),
-					products.get(i).getProductQuantity(),
-					products.get(i).getStorageBalance()
-			);
-		}
+		try {
+			String sql = "select * from produto";
+			preparedStatement = connection.prepareStatement(sql);
+			ResultSet resultSet = preparedStatement.executeQuery();
 
-		return products;
+			System.out.println("\n---- PRODUTOS CADASTRADOS ----\n");
+			System.out.printf("| %2s | %14s | %8s | %4s | %9s | \n", "ID", "Produto", "Preço", "Qntd", "R$ Total");
+			
+			while(resultSet.next()) {
+				System.out.printf("| %2s | %14s | %8s | %4s | %9s | \n", 
+						resultSet.getInt("cod"),
+						resultSet.getString("productName"),
+						resultSet.getDouble("productPrice"),
+						resultSet.getInt("productQuantity"),
+						resultSet.getDouble("storageBalance")
+				);
+			}
+			
+			return resultSet;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 }
