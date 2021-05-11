@@ -18,7 +18,7 @@ public class EditProduct {
 			return;
 		}
 		
-		storageList.storageList(products);
+		storageList.listData();
 			
 		System.out.println("\n---- EDITAR DADOS DE PRODUTO ----\n");
 		System.out.print("\nInforme o Id do produto: ");

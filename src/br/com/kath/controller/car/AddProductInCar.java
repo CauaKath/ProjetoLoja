@@ -11,13 +11,12 @@ public class AddProductInCar {
 	private Scanner input = new Scanner(System.in);
 	
 	public ProdutoModel addProductInCar(List<ProdutoModel> products) {
-		StorageList storageList = new StorageList();
-		
+		var storageList = new StorageList();
 		var product = new ProdutoModel();
 		
 		int productId, productQntd;
 		
-		storageList.storageList(products);
+		storageList.listData();
 		
 		System.out.print("\nInforme o ID do produto que deseja adicionar ao carrinho: ");
 		productId = input.nextInt();

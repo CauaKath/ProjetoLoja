@@ -26,12 +26,12 @@ public class ManagerMenu {
 		
 		switch (option) {
 		case 1:
-			products.add(registerProduct.registerProduct());
+			registerProduct.registerProduct();
 			this.managerMenu(products);
 			break;
 		
 		case 2:
-			storageList.storageList(products);
+			storageList.listData();
 			this.managerMenu(products);
 			break;
 		

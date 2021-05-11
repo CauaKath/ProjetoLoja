@@ -42,6 +42,11 @@ public class ProgramaPrincipal {
 				
 			case 3:
 				var user = login.login(people);
+				
+				if (user == null) {
+					break;
+				}
+				
 				clientMenu.clientMenu(user, products);
 				break;
 				

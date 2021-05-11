@@ -3,6 +3,7 @@ package br.com.kath.controller.car;
 import java.util.List;
 import java.util.Scanner;
 
+import br.com.kath.controller.product.StorageList;
 import br.com.kath.model.PersonModel;
 import br.com.kath.model.ProdutoModel;
 
@@ -13,10 +14,10 @@ public class EditQuantityInCar {
 	public void editQntdInCar(PersonModel person, List<ProdutoModel> products) {
 		int productQntd, productId;
 		String productName;
-		var carProductList = new CarProductList();
+		var storageList = new StorageList();
 		var nameValidate = new NameValidate();
 		
-		carProductList.carProductsList(person);
+		storageList.listData();
 		
 		System.out.print("\nInforme o nome do produto que deseja alterar a quantidade: ");
 		productName = input.next();
