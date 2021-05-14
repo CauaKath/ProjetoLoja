@@ -36,7 +36,7 @@ public class ManagerMenu {
 			break;
 		
 		case 3:
-			editProduct.editProduct(products);
+			editProduct.editProduct();
 			this.managerMenu(products);
 			break;
 			
