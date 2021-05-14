@@ -22,6 +22,13 @@ public class StorageList {
 			preparedStatement = connection.prepareStatement(sql);
 			ResultSet resultSet = preparedStatement.executeQuery();
 
+			if(!resultSet.next()) {
+				System.out.println("\nNão possui dados cadastrados");
+				return null;
+			}
+			
+			resultSet.previous();
+			
 			System.out.println("\n---- PRODUTOS CADASTRADOS ----\n");
 			System.out.printf("| %2s | %14s | %8s | %4s | %9s | \n", "ID", "Produto", "Preço", "Qntd", "R$ Total");
 			
