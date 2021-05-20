@@ -33,7 +33,7 @@ public class EditProduct {
 		productId = input.nextInt();
 		
 		try {
-			String sql = "SELECT * FROM produto WHERE cod = ?";
+			String sql = "SELECT * FROM products WHERE cod = ?";
 			preparedStatement = connection.prepareStatement(sql);
 			
 			preparedStatement.setInt(1, productId);
@@ -86,7 +86,7 @@ public class EditProduct {
 		product.setProductName(input.next());
 		
 		try {
-			String sql = "UPDATE produto SET productName = ? WHERE cod = ?";
+			String sql = "UPDATE products SET productName = ? WHERE cod = ?";
 			preparedStatement = connection.prepareStatement(sql);
 			
 			preparedStatement.setString(1, product.getProductName());
@@ -112,7 +112,7 @@ public class EditProduct {
 				product.getProductQuantity());
 		
 		try {
-			String sql = "UPDATE produto SET productPrice = ?, storageBalance = ? "
+			String sql = "UPDATE products SET productPrice = ?, storageBalance = ? "
 					+ " WHERE cod = ?";
 			preparedStatement = connection.prepareStatement(sql);
 			
@@ -140,7 +140,7 @@ public class EditProduct {
 				product.getProductQuantity());
 		
 		try {
-			String sql = "UPDATE produto SET productQuantity = ?, storageBalance = ? "
+			String sql = "UPDATE products SET productQuantity = ?, storageBalance = ? "
 					+ " WHERE cod = ?";
 			preparedStatement = connection.prepareStatement(sql);
 			
