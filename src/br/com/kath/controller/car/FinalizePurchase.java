@@ -1,50 +1,181 @@
 package br.com.kath.controller.car;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
-import br.com.kath.model.CarModel;
-import br.com.kath.model.PersonModel;
+import br.com.dao.DataBaseConnection;
 import br.com.kath.model.ProdutoModel;
 
 public class FinalizePurchase {
+	
+	private Connection connection;
+	
+	public FinalizePurchase() {
+		connection = DataBaseConnection.getInstance().getConnection();
+	}
 
-	public void finalizePurchase(PersonModel person) {
-		var carModel = this.calculateTotal(person.getCar().getCarProducts());
+	public void generateNF(int clientId) {
+		PreparedStatement preparedStatement;
 		
-		if (person.getCar().getCarProducts().size() == 0) {
-			System.out.println("\nNão há nada em seu carrinho!");
+		try {
+			String sql = "SELECT * FROM shopping_carts WHERE clientId = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, clientId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			if (!resultSet.next()) {
+				System.out.println("\nNão há itens no seu carrinho!");
+				return;
+			}
+			
+			System.out.println("--------------------------------------------------");
+			System.out.println("Comprador: " + getClientName(clientId));
+			System.out.println("--------------------------------------------------");
+			System.out.printf("%-10s     %-4s     %-10s     %-10s \n", "Produto", "Qtd", "V Unit", "V Total");
+			System.out.println("--------------------------------------------------");
+			
+			resultSet.previous();
+			
+			while (resultSet.next()) {
+				System.out.printf("%-10s     %-4s     %-10s     %-10s \n", 
+						getProductName(resultSet.getInt("productId")),
+						resultSet.getInt("productAmount"),
+						getProductPrice(resultSet.getInt("productId")),
+						getProductPrice(resultSet.getInt("productId")) * resultSet.getInt("productAmount")
+				);
+				
+			}
+			
+			System.out.println("--------------------------------------------------");
+			System.out.println("                        Total:         R$  " + calculateTotal(clientId));
+			System.out.println("--------------------------------------------------");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 			return;
 		}
 		
-		System.out.println("--------------------------------------------------");
-		System.out.println("Comprador: " + person.getNome());
-		System.out.println("--------------------------------------------------");
-		System.out.printf("%-10s     %-4s     %-10s     %-10s \n", "Produto", "Qtd", "V Unit", "V Total");
-		System.out.println("--------------------------------------------------");
-		for (int i = 0; i < person.getCar().getCarProducts().size(); i++) {
-			System.out.printf("%-10s     %-4s     %-10s     %-10s \n",
-					person.getCar().getCarProducts().get(i).getProductName(),
-					person.getCar().getCarProducts().get(i).getProductQuantity(),
-					"R$  " + person.getCar().getCarProducts().get(i).getProductPrice(),
-					"R$  " + person.getCar().getCarProducts().get(i).getStorageBalance());
-		}
-		System.out.println("--------------------------------------------------");
-		System.out.println("                        Total:         R$  " + carModel.getTotal());
-		System.out.println("--------------------------------------------------");
+		cleanCart(clientId);
 		
-		for (int i = 0; i < person.getCar().getCarProducts().size(); i ++) {
-			person.getCar().getCarProducts().remove(i);
+	}
+	
+	private void cleanCart(int clientId) {
+		PreparedStatement preparedStatement;
+		
+		try {
+			String sql = "DELETE FROM shopping_carts WHERE clientId = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, clientId);
+			
+			preparedStatement.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+	}
+
+	private double calculateTotal(int clientId) {
+		PreparedStatement preparedStatement;
+		double total = 0;
+		
+		try {
+			String sql = "SELECT * FROM shopping_carts WHERE clientId = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, clientId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			while(resultSet.next()) {
+				total += resultSet.getInt("productAmount") * getProductPrice(resultSet.getInt("productId"));
+			}
+			
+			return total;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
 		}
 	}
 	
-	private CarModel calculateTotal(List<ProdutoModel> carProducts) {
-		double total = 0;
-		var carModel = new CarModel();
-		for (int i = 0; i < carProducts.size(); i++) {
-			total += carProducts.get(i).getProductPrice() * carProducts.get(i).getProductQuantity();
+	private double getProductPrice(int productId) {
+		PreparedStatement preparedStatement;
+		var product = new ProdutoModel();
+		
+		try {
+			String sql = "SELECT * FROM products WHERE cod = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, productId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			if (!resultSet.next()) {
+				System.out.println("\nEste produto não existe");
+				return 0;
+			} else {
+				product.setProductPrice(resultSet.getDouble("productPrice"));
+			}
+			
+			return product.getProductPrice();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
 		}
-		carModel.setTotal(total);
-		return carModel;
+	}
+	
+	private String getProductName(int productId) {
+		PreparedStatement preparedStatement;
+		var product = new ProdutoModel();
+		
+		try {
+			String sql = "SELECT * FROM products WHERE cod = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, productId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			if (!resultSet.next()) {
+				System.out.println("\nEste produto não existe");
+				return null;
+			} else {
+				product.setProductName(resultSet.getString("productName"));
+			}
+			
+			return product.getProductName();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private String getClientName(int clientId) {
+		PreparedStatement preparedStatement;
+		
+		try {
+			String sql = "SELECT * FROM clients WHERE id = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, clientId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			if (!resultSet.next()) {
+				System.out.println("\nCliente não encontrado!");
+				return null;
+			}
+			
+			return resultSet.getString("clientName");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 }
