@@ -18,7 +18,7 @@ public class StorageList {
 		PreparedStatement preparedStatement;
 		
 		try {
-			String sql = "select * from produto";
+			String sql = "select * from products";
 			preparedStatement = connection.prepareStatement(sql);
 			ResultSet resultSet = preparedStatement.executeQuery();
 
