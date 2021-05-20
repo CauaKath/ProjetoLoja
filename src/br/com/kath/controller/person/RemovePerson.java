@@ -1,15 +1,22 @@
 package br.com.kath.controller.person;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Scanner;
 
-import br.com.kath.model.PersonModel;
+import br.com.dao.DataBaseConnection;
 
 public class RemovePerson {
 	
 	private Scanner input = new Scanner(System.in);
+	private Connection connection;
+	
+	public RemovePerson() {
+		connection = DataBaseConnection.getInstance().getConnection();
+	}
 
-	public PersonModel removePerson(List<PersonModel> people) {
+	public void removePerson() {
+		PreparedStatement preparedStatement;
 		String name;
 		int id;
 		Login login = new Login();
@@ -18,14 +25,26 @@ public class RemovePerson {
 		System.out.println("Informe o nome da pessoa a ser removida: ");
 		name = input.next();
 		
-		id = login.validateLogin(people, name);
+		id = login.validateLogin(name);
 		
 		if (id == -1) {
 			System.out.println("\nPessoa não existe no sistema!");
-			return null;
+			return;
 		}
 		
-		return people.get(id);
+		try {
+			String sql = "DELETE FROM clients WHERE id = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, id);
+			
+			preparedStatement.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		return;
 	}
 	
 }
