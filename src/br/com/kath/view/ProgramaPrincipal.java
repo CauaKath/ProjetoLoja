@@ -1,20 +1,14 @@
 package br.com.kath.view;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import br.com.kath.controller.person.Login;
-import br.com.kath.model.PersonModel;
-import br.com.kath.model.ProdutoModel;
 
 public class ProgramaPrincipal {
 
 	public static void main(String[] args) {
 		
 		Scanner input = new Scanner(System.in);
-		List<ProdutoModel> products = new ArrayList<ProdutoModel>();
-		List<PersonModel> people = new ArrayList<PersonModel>();
 		
 		boolean getOut = false;
 		
@@ -29,25 +23,26 @@ public class ProgramaPrincipal {
 			System.out.println("2) Gestor de estoque");
 			System.out.println("3) Cliente");
 			System.out.println("4) Sair");
+			System.out.print("> ");
 			int option = input.nextInt();
 			
 			switch (option) {
 			case 1:
-				admMenu.admMenu(people);
+				admMenu.admMenu();
 				break;
 				
 			case 2:
-				managerMenu.managerMenu(products);
+				managerMenu.managerMenu();
 				break;
 				
 			case 3:
-				var user = login.login(people);
+				var user = login.login();
 				
-				if (user == null) {
+				if (user == -1) {
 					break;
 				}
 				
-				clientMenu.clientMenu(user, products);
+				clientMenu.clientMenu(user);
 				break;
 				
 			case 4:
