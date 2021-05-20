@@ -1,18 +1,16 @@
 package br.com.kath.view;
 
-import java.util.List;
 import java.util.Scanner;
 
 import br.com.kath.controller.person.PersonMenu;
 import br.com.kath.controller.person.RegisterPerson;
 import br.com.kath.controller.person.RemovePerson;
-import br.com.kath.model.PersonModel;
 
 public class AdmMenu {
 	
 	private Scanner input = new Scanner(System.in);
 
-	public void admMenu(List<PersonModel> people) {
+	public void admMenu() {
 		PersonMenu personMenu = new PersonMenu();
 		RegisterPerson registerPerson = new RegisterPerson();
 		RemovePerson removePerson = new RemovePerson();
@@ -22,13 +20,13 @@ public class AdmMenu {
 		
 		switch (option) {
 		case 1:
-			people.add(registerPerson.register(people));
-			this.admMenu(people);
+			registerPerson.register();
+			this.admMenu();
 			break;
 			
 		case 2:
-			people.remove(removePerson.removePerson(people));
-			this.admMenu(people);
+			removePerson.removePerson();
+			this.admMenu();
 			break;
 			
 		case 3:
@@ -36,7 +34,7 @@ public class AdmMenu {
 			
 		default:
 			System.out.println("\nOpção inválida!!!");
-			this.admMenu(people);
+			this.admMenu();
 			break;
 		}
 	}
