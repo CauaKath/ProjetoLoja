@@ -1,50 +1,112 @@
 package br.com.kath.controller.car;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Scanner;
 
-import br.com.kath.controller.product.StorageList;
-import br.com.kath.model.PersonModel;
+import br.com.dao.DataBaseConnection;
 import br.com.kath.model.ProdutoModel;
 
 public class EditQuantityInCar {
 	
 	private Scanner input = new Scanner(System.in);
+	private Connection connection;
+	private ProdutoModel product = new ProdutoModel();;
+	
+	public EditQuantityInCar() { 
+		connection = DataBaseConnection.getInstance().getConnection();
+	}
 
-	public void editQntdInCar(PersonModel person, List<ProdutoModel> products) {
+	public void editQntdInCar(int clientId) {
+		PreparedStatement preparedStatement;
 		int productQntd, productId;
-		String productName;
-		var storageList = new StorageList();
-		var nameValidate = new NameValidate();
+		var carProductsList = new CarProductList();
 		
-		storageList.listData();
+		if (carProductsList.carProductsList(clientId) == false) {
+			return;
+		}
 		
-		System.out.print("\nInforme o nome do produto que deseja alterar a quantidade: ");
-		productName = input.next();
+		System.out.print("\nInforme o id do produto que deseja alterar a quantidade: ");
+		productId = input.nextInt();
 		
-		productId = nameValidate.nameValidate(person.getCar().getCarProducts(), productName);
-		
-		if (productId == -1) {
-			System.out.println("\nProduto não existe no carrinho!");
+		try {
+			String sql = "SELECT * FROM shopping_carts WHERE productId = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, productId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			if (!resultSet.next()) {
+				System.out.println("\nEste produto não existe no carrinho");
+				return;
+			} else {
+				product.setProductQuantity(resultSet.getInt("productAmount"));
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 			return;
 		}
 		
 		System.out.print("\nInforme a quantidade do produto que deseja adicionar: ");
 		productQntd = input.nextInt();
 		
-		if (productQntd > products.get(productId).getProductQuantity()) {
+		if (product.getProductQuantity() < productQntd) {
 			System.out.println("\nQuantidade maior do que a listada em estoque");
 			return;
 		}
 		
-		person.getCar().getCarProducts().get(productId).setProductQuantity(person.getCar().getCarProducts().get(productId).getProductQuantity() + productQntd);
-		person.getCar().getCarProducts().get(productId).setStorageBalance(person.getCar().getCarProducts().get(productId).getProductQuantity() *
-				person.getCar().getCarProducts().get(productId).getProductPrice());
-		
-		products.get(productId).setProductQuantity(products.get(productId).getProductQuantity() - productQntd);
-		products.get(productId).setStorageBalance(products.get(productId).getProductQuantity() * products.get(productId).getProductPrice());
+		try {
+			String sql = "UPDATE shopping_carts SET productAmount = ? WHERE productId = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, product.getProductQuantity() + productQntd);
+			preparedStatement.setInt(2, productId);
+			
+			getAmountInStock(productId, productQntd);
+			
+			preparedStatement.execute();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 		
 		return;
+	}
+	
+	private void getAmountInStock(int productId, int productQntd) {
+		PreparedStatement preparedStatement;
+		var productInStock = new ProdutoModel();
+		var removeProductFromStock = new RemoveProductFromStock();
+		
+		try {
+			String sql = "SELECT * FROM products WHERE cod = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, productId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			if (!resultSet.next()) {
+				System.out.println("\nEste produto não existe no estoque");
+				return;
+			} else {
+				productInStock.setProductQuantity(resultSet.getInt("productQuantity"));
+				productInStock.setProductPrice(resultSet.getDouble("productPrice"));
+			}
+			
+			removeProductFromStock.removeProductFromStock(productId, 
+					productInStock.getProductQuantity() - productQntd,
+					productInStock.getProductPrice());
+			
+			preparedStatement.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 	
 }
