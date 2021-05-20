@@ -1,24 +1,40 @@
 package br.com.kath.controller.person;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Scanner;
 
-import br.com.kath.model.PersonModel;
+import br.com.dao.DataBaseConnection;
 
 public class RegisterPerson {
 
 	private Scanner input = new Scanner(System.in);
+	private Connection connection;
 	
-	public PersonModel register(List<PersonModel> people) {
-		var personModel = new PersonModel();
+	public RegisterPerson() {
+		connection = DataBaseConnection.getInstance().getConnection();
+	}
+	
+	public void register() {
+		PreparedStatement preparedStatement;
+		String name;
 		
 		System.out.println("\n--- CADASTRO ---\n");
 		System.out.println("Informe o seu nome: ");
-		personModel.setNome(input.next());
-		System.out.println("\nInforme o modelo do seu carrinho: ");
-		personModel.getCar().setModel(input.next());
+		name = input.next();
 		
-		return personModel;
+		try {
+			String sql = "INSERT INTO clients (clientName) VALUES (?)";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setString(1, name);
+			
+			preparedStatement.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		
 	}
 	
 }
