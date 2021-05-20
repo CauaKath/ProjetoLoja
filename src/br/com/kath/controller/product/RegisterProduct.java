@@ -17,6 +17,7 @@ public class RegisterProduct {
 	}
 
 	public ProdutoModel registerProduct() {
+		PreparedStatement preparedStatement;
 		var productModel = new ProdutoModel();
 
 		System.out.println("\n---- CADASTRAR ITENS ----\n");
@@ -29,9 +30,9 @@ public class RegisterProduct {
 		productModel.setStorageBalance(productModel.getProductQuantity() * productModel.getProductPrice());
 
 		try {
-			String sql = "INSERT INTO produto (productName, productPrice, productQuantity, storageBalance)"
+			String sql = "INSERT INTO products (productName, productPrice, productQuantity, storageBalance)"
 					+ "VALUES(?, ?, ?, ?)";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement = connection.prepareStatement(sql);
 			
 			preparedStatement.setString(1, productModel.getProductName());
 			preparedStatement.setDouble(2, productModel.getProductPrice());
