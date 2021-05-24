@@ -22,6 +22,7 @@ public class EditQuantityInCar {
 		PreparedStatement preparedStatement;
 		int productQntd, productId;
 		var carProductsList = new CarProductList();
+		var updateAmountInStorage = new UpdateAmountInStorage();
 		
 		if (carProductsList.carProductsList(clientId) == false) {
 			return;
@@ -58,6 +59,18 @@ public class EditQuantityInCar {
 			return;
 		}
 		
+		updateProductAmount(productId, productQntd);
+		
+		updateAmountInStorage.updateAmountInStorage(productId, 
+				getProductQuantity(productId) - productQntd,
+				getProductPrice(productId));
+		
+		return;
+	}
+	
+	public void updateProductAmount(int productId, int productQntd) {
+		PreparedStatement preparedStatement;
+		
 		try {
 			String sql = "UPDATE shopping_carts SET productAmount = ? WHERE productId = ?";
 			preparedStatement = connection.prepareStatement(sql);
@@ -65,22 +78,16 @@ public class EditQuantityInCar {
 			preparedStatement.setInt(1, product.getProductQuantity() + productQntd);
 			preparedStatement.setInt(2, productId);
 			
-			getAmountInStock(productId, productQntd);
-			
 			preparedStatement.execute();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
 		}
-		
-		return;
 	}
 	
-	private void getAmountInStock(int productId, int productQntd) {
+	private int getProductQuantity(int productId) {
 		PreparedStatement preparedStatement;
-		var productInStock = new ProdutoModel();
-		var removeProductFromStock = new RemoveProductFromStock();
 		
 		try {
 			String sql = "SELECT * FROM products WHERE cod = ?";
@@ -92,20 +99,38 @@ public class EditQuantityInCar {
 			
 			if (!resultSet.next()) {
 				System.out.println("\nEste produto não existe no estoque");
-				return;
-			} else {
-				productInStock.setProductQuantity(resultSet.getInt("productQuantity"));
-				productInStock.setProductPrice(resultSet.getDouble("productPrice"));
+				return -1;
 			}
 			
-			removeProductFromStock.removeProductFromStock(productId, 
-					productInStock.getProductQuantity() - productQntd,
-					productInStock.getProductPrice());
+			return resultSet.getInt("productQuantity");
 			
-			preparedStatement.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
-			return;
+			return -1;
+		}
+	}
+	
+	private double getProductPrice(int productId) {
+		PreparedStatement preparedStatement;
+		
+		try {
+			String sql = "SELECT * FROM products WHERE cod = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, productId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			if (!resultSet.next()) {
+				System.out.println("\nEste produto não existe no estoque");
+				return -1;
+			}
+			
+			return resultSet.getDouble("productPrice");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
 		}
 	}
 	
