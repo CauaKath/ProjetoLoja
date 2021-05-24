@@ -22,7 +22,8 @@ public class AddProductInCar {
 	public ProdutoModel addProductInCar(int clientId) {
 		PreparedStatement preparedStatement;
 		var storageList = new StorageList();
-		var removeProductFromStock = new RemoveProductFromStock();
+		var updateAmountInStorage = new UpdateAmountInStorage();
+		var editQuantityInCar = new EditQuantityInCar();
 		
 		int productId, productQntd;
 		
@@ -55,6 +56,18 @@ public class AddProductInCar {
 			return null;
 		}
 		
+		if (!checkIfProductAlreadyExists(productId)) {
+			System.out.print("\nInforme a quantidade do produto: ");
+			productQntd = input.nextInt();
+			
+			editQuantityInCar.updateProductAmount(productId, getAmountInCar(productId) + productQntd);
+			
+			updateAmountInStorage.updateAmountInStorage(productId,
+					product.getProductQuantity() - productQntd, product.getProductPrice());
+			
+			return product;
+		}
+		
 		System.out.print("\nInforme a quantidade do produto: ");
 		productQntd = input.nextInt();
 		
@@ -72,7 +85,7 @@ public class AddProductInCar {
 			preparedStatement.setInt(2, productId);
 			preparedStatement.setInt(3, productQntd);
 			
-			removeProductFromStock.removeProductFromStock(productId,
+			updateAmountInStorage.updateAmountInStorage(productId,
 					product.getProductQuantity() - productQntd, product.getProductPrice());
 			
 			preparedStatement.execute();
@@ -82,6 +95,51 @@ public class AddProductInCar {
 		}
 		
 		return product;
+	}
+	
+	private boolean checkIfProductAlreadyExists(int productId) {
+		PreparedStatement preparedStatement;
+		
+		try {
+			String sql = "SELECT * FROM shopping_carts WHERE productId = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, productId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			if(resultSet.next()) {
+				return false;
+			}
+			
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	private int getAmountInCar(int productId) {
+		PreparedStatement preparedStatement;
+		
+		try {
+			String sql = "SELECT * FROM shopping_carts WHERE productId = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			
+			preparedStatement.setInt(1, productId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			if(!resultSet.next()) {
+				System.out.println("\nProduto não existe no carrinho!");
+				return -1;
+			}
+			
+			return resultSet.getInt("productAmount");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
 	}
 	
 }
